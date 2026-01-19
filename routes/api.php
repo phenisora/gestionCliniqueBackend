@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DoctorController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
 
 // Routes public pour les médecins
 Route::get('/doctors',[DoctorController::class,'index']);
@@ -23,3 +25,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);
     Route::post('/doctors/{id}/availabilities', [DoctorController::class, 'definirAvailabilities']);
 });
+
+Route::post('/auth/register', [AuthController::class, 'registerPatient']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    // Routes Réceptionniste
+    Route::middleware(['role:receptionist'])->group(function () {
+        Route::post('auth/register/doctor', [AuthController::class, 'registerDoctor']);
+       // Route::apiResource('patients', PatientController::class);
+    });
+});
+
