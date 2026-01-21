@@ -14,6 +14,12 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('auth/profile', [AuthController::class, 'profile']);
+    Route::put('auth/profile', [AuthController::class, 'updateProfile']);
+
+
     // Routes Réceptionniste
     Route::middleware(['role:receptionist'])->group(function () {
         Route::post('auth/register/doctor', [AuthController::class, 'registerDoctor']);

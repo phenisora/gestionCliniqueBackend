@@ -116,7 +116,7 @@ public function login(Request $request) {
 
         
         if ($user->role === 'doctor') {
-            $user->load('doctor.specialite'); 
+            $user->load('doctor.speciality'); 
         } elseif ($user->role === 'patient') {
             $user->load('patient');
         }
@@ -139,6 +139,48 @@ public function login(Request $request) {
 }
 
     return response()->json(['message' => 'Identifiants incorrects'], 401);
+}
+
+public function logout(Request $request){
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json([
+        'message' => 'Déconnexion réussie (Token supprimé)'
+    ], 200);
+}
+
+public function profile(Request $request){
+    $user=$request->user();
+    /*
+    if (!$user) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Non authentifié'
+        ], 401);
+    }
+    */
+    try{
+    
+    if ($user->role === 'doctor'){
+        $user->load('doctor.speciality');
+    } elseif ($user->role === 'patient') {
+        $user->load('patient');
+    }
+}catch (\Exception $e) {
+    return response()->json([
+        'error' => 'Erreur lors du chargement du profile',
+        'details' => $e->getMessage() 
+    ], 500);
+}
+
+    return response()->json([
+        'status' => true,
+        'data' => $user
+    ]);
+}
+
+public function updateProfile(Request $request){
+    
 }
 
 }
