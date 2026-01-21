@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
 {
+    
+
     protected $fillable =[
         'user_id',
         'name',
@@ -25,8 +27,10 @@ class Doctor extends Model
         return $this->belongsTo(User::class);
     }
 
+
     public function speciality(){
         return $this->belongsTo(Speciality::class,'specialty_id');
     }
+
 
 }
