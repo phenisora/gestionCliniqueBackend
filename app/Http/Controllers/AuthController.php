@@ -116,7 +116,7 @@ public function login(Request $request) {
 
         
         if ($user->role === 'doctor') {
-            $user->load('doctor.specialite'); 
+            $user->load('doctor.specialité'); 
         } elseif ($user->role === 'patient') {
             $user->load('patient');
         }

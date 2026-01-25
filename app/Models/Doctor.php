@@ -26,4 +26,10 @@ class Doctor extends Model
         return $this->belongsTo(User::class);
     }
 
+    
+        public function availabilities()
+{
+    return $this->hasMany(Availability::class);
+}
+
 }

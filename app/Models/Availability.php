@@ -23,8 +23,5 @@ class Availability extends Model
         return $this->belongsTo(Doctor::class);
     }
 
-    public function availabilities()
-{
-    return $this->hasMany(Availability::class);
-}
+
 }
