@@ -185,8 +185,50 @@ public function profile(Request $request){
     ]);
 }
 
-public function updateProfile(Request $request){
+public function updateProfile(Request $request)
+{
+    $user = $request->user();
 
+    // Validation des données
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        // Validation spécifique si c'est un docteur
+        'license_number' => 'required|unique:doctors'
+    ]);
+
+    try {
+        return DB::transaction(function () use ($request, $user) {
+            
+            // Mise à jour de la table 'users'
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
+
+            // Mise à jour de la table liée selon le rôle
+            if ($user->role === 'doctor' && $user->doctor) {
+                $user->doctor->update($request->only([
+                    'speciality_id', 
+                    'license_number', 
+                    'consultation_fee'
+                ]));
+            } 
+            elseif ($user->role === 'patient' && $user->patient) {
+                $user->patient->update($request->only([
+                    'address', 
+                    'phone'
+                ]));
+            }
+
+            return response()->json([
+                'message' => 'Profil mis à jour avec succès',
+                'data' => $user->load($user->role) // Recharge les données fraîches
+            ]);
+        });
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Échec de la mise à jour'], 500);
+    }
 }
 
 }

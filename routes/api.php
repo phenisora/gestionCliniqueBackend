@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
+
 
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
@@ -37,6 +39,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //Route::middleware('auth:sanctum')->group(function () {
 
+
+//Route::middleware('auth:sanctum')->group(function () {
+
     Route::post('/doctors', [DoctorController::class, 'store']);
     Route::put('/doctors/{doctors}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);
@@ -48,7 +53,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
+
 Route::group(['middleware'=>'auth:sanctum'], function(){
+
+//Route::group(['middleware'=>'auth:sanctum'], function(){
+
 
 //Route::group(['middleware'=>'auth:sanctum'], function(){
 
@@ -59,10 +68,13 @@ Route::group(['middleware'=>'auth:sanctum'], function(){
     Route::GET('/patients/{id}/medical-history', [PatientController::class, 'medicalHistory']);
     Route::GET('/patients/{id}/appointments', [PatientController::class, 'appointments']);
 
+
 });
 
 //});
 
+
+//});
 
 Route::post('/auth/register', [AuthController::class, 'registerPatient']);
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -72,7 +84,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/profile', [AuthController::class, 'profile']);
-    Route::put('auth/profile', [AuthController::class, 'updateProfile']);
+    Route::put('auth/updateProfile', [AuthController::class, 'updateProfile']);
 
 
     // Routes Réceptionniste
