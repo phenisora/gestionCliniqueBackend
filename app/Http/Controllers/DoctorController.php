@@ -27,10 +27,10 @@ class DoctorController extends Controller
 
      public function store(Request $request) {
         $doctors = Doctor::create($request->validate([
-            'user_id' => 'required',
-            'specialty_id' => 'required',
+            'user_id' => 'nullable',
+            'specialty_id' => 'nullable',
             'license_number' => 'required|unique:doctors',
-            'consultation_fee' => 'required|numeric'
+            'consultation_fee' => 'nullable|numeric'
         ]));
         return response()->json($doctors, 201);
     }

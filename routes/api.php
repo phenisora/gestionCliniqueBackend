@@ -1,20 +1,19 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
-use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\PatientController;
-
-
-=======
+use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\DoctorController;
-
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PrescriptionController;
 
->>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
+
+
+
+
+
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -32,38 +31,38 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
 // Routes Protégées (Médecin/Réceptionniste)
 
-<<<<<<< HEAD
+
 Route::middleware('auth:sanctum')->group(function () {
 
-=======
+
 //Route::middleware('auth:sanctum')->group(function () {
->>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
+
     Route::post('/doctors', [DoctorController::class, 'store']);
-    Route::put('/doctors/{id}', [DoctorController::class, 'update']);
+    Route::put('/doctors/{doctors}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);
     Route::post('/doctors/{id}/availabilities', [DoctorController::class, 'definirAvailabilities']);
     Route::get('/doctors/{id}/availabilities', [DoctorController::class, 'dispoDunmedecin']);
-//});
+});
 
 
 
-<<<<<<< HEAD
+
 
 Route::group(['middleware'=>'auth:sanctum'], function(){
-=======
+
 //Route::group(['middleware'=>'auth:sanctum'], function(){
->>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
+
     Route::GET('/patients', [PatientController::class, 'index']);
     Route::GET('/patients/{id}', [PatientController::class, 'show']);
     Route::DELETE('/patients/{id}', [PatientController::class, 'destroy']);
     Route::PUT('/patients/{id}', [PatientController::class, 'update']);
     Route::GET('/patients/{id}/medical-history', [PatientController::class, 'medicalHistory']);
     Route::GET('/patients/{id}/appointments', [PatientController::class, 'appointments']);
-<<<<<<< HEAD
+
 });
-=======
+
 //});
->>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
+
 
 Route::post('/auth/register', [AuthController::class, 'registerPatient']);
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -82,3 +81,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
        // Route::apiResource('patients', PatientController::class);
     });
 });
+
+
+
+//Route pour les ordonnances
+
+Route::post('/prescriptions',[PrescriptionController::class,'creerOrdonnance']);
+Route::put('/prescriptions/{id}',[PrescriptionController::class,'modifierOrdonnance']);
+Route::delete('/prescriptions/{id}',[PrescriptionController::class,'supprimerOrdonnance']);
