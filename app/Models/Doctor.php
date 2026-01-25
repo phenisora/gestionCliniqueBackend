@@ -32,5 +32,7 @@ class Doctor extends Model
         return $this->belongsTo(Speciality::class,'specialty_id');
     }
 
+   
+
 
 }

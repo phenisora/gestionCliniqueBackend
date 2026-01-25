@@ -75,7 +75,7 @@ public function medecinsParSpecialite($id)
 {
     // 1. Récupérer tous les docteurs ayant cette spécialité
     // On charge 'user' pour avoir leurs noms
-    $doctors = Doctor::with('user')
+    $doctors = Doctor::with('userD')
         ->where('specialty_id', $id)
         ->get();
 
