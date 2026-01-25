@@ -28,11 +28,14 @@ class Doctor extends Model
     }
 
 
+        public function availabilities()
+{
+    return $this->hasMany(Availability::class);
+}
+
+
     public function speciality(){
         return $this->belongsTo(Speciality::class,'specialty_id');
     }
-
-   
-
 
 }
