@@ -61,7 +61,7 @@ class PatientController extends Controller
 
         // Vérifier l'autorisation
         $user = auth()->user();
-        if ($user->isPatient() && $user->patient->id !== $patient->id) {
+        if ($user->Patient() && $user->patient->id !== $patient->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Non autorisé',
@@ -77,41 +77,49 @@ class PatientController extends Controller
     /**
      * Mettre à jour un patient
      */
-    public function update(Request $request, $id)
-    {
-        $patient = Patient::findOrFail($id);
+   public function update(Request $request, $id)
+{
+    $patient = Patient::findOrFail($id);
 
-        // Vérifier l'autorisation
-        $user = auth()->user();
-        if ($user->isPatient() && $user->patient->id !== $patient->id && !$user->isReceptionist()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Non autorisé',
-            ], 403);
-        }
+    $user = auth()->user();
 
-        $validated = $request->validate([
-            'date_of_birth' => 'sometimes|date',
-            'gender' => 'sometimes|in:male,female,other',
-            'blood_type' => 'sometimes|string',
-            'address' => 'sometimes|string',
-            'emergency_contact' => 'sometimes|string',
-            'allergies' => 'sometimes|string',
-        ]);
-
-        $patient->update($validated);
-
-        // Mettre à jour l'utilisateur si nécessaire
-        if ($request->has('name') || $request->has('phone')) {
-            $patient->user->update($request->only(['name', 'phone']));
-        }
-
+    // 🔐 Autorisation
+    if (
+        $user->patient &&                 // l'utilisateur est un patient
+        $user->patient->id !== $patient->id && // pas son propre profil
+        $user->role !== 'receptionist'    // pas réceptionniste
+    ) {
         return response()->json([
-            'success' => true,
-            'message' => 'Patient mis à jour avec succès',
-            'data' => new PatientResource($patient->fresh()),
-        ]);
+            'success' => false,
+            'message' => 'Non autorisé',
+        ], 403);
     }
+
+    $validated = $request->validate([
+        'date_of_birth' => 'sometimes|date',
+        'gender' => 'sometimes|in:male,female,other',
+        'blood_type' => 'sometimes|string',
+        'address' => 'sometimes|string',
+        'emergency_contact' => 'sometimes|string',
+        'allergies' => 'sometimes|string',
+    ]);
+
+    $patient->update($validated);
+
+    // Mise à jour des infos utilisateur
+    if ($request->hasAny(['name', 'phone'])) {
+        $patient->user->update(
+            $request->only(['name', 'phone'])
+        );
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Patient mis à jour avec succès',
+        'data' => new PatientResource($patient->fresh('user')),
+    ], 200);
+}
+
 
     /**
      * Supprimer un patient (Réceptionniste uniquement)
@@ -145,7 +153,7 @@ class PatientController extends Controller
 
         // Vérifier l'autorisation
         $user = auth()->user();
-        if ($user->isPatient() && $user->patient->id !== $patient->id) {
+        if ($user->Patient() && $user->patient->id !== $patient->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Non autorisé',
@@ -201,7 +209,7 @@ class PatientController extends Controller
 
         // Vérifier l'autorisation
         $user = auth()->user();
-        if ($user->isPatient() && $user->patient->id !== $patient->id) {
+        if ($user->Patient() && $user->patient->id !== $patient->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Non autorisé',

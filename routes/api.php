@@ -3,11 +3,18 @@
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\PatientController;
+
+
+=======
 
 use App\Http\Controllers\DoctorController;
 
 use App\Http\Controllers\PatientController;
 
+>>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -23,9 +30,14 @@ Route::get('/doctors/search', [DoctorController::class, 'searchParNom']);
 // Route pour la recherche par date
 Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
-// Routes Protégées (Médecin/Réceptionniste) 
+// Routes Protégées (Médecin/Réceptionniste)
 
+<<<<<<< HEAD
+Route::middleware('auth:sanctum')->group(function () {
+
+=======
 //Route::middleware('auth:sanctum')->group(function () {
+>>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
     Route::post('/doctors', [DoctorController::class, 'store']);
     Route::put('/doctors/{id}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);
@@ -35,23 +47,38 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
 
 
+<<<<<<< HEAD
+
+Route::group(['middleware'=>'auth:sanctum'], function(){
+=======
 //Route::group(['middleware'=>'auth:sanctum'], function(){
+>>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
     Route::GET('/patients', [PatientController::class, 'index']);
     Route::GET('/patients/{id}', [PatientController::class, 'show']);
     Route::DELETE('/patients/{id}', [PatientController::class, 'destroy']);
     Route::PUT('/patients/{id}', [PatientController::class, 'update']);
     Route::GET('/patients/{id}/medical-history', [PatientController::class, 'medicalHistory']);
     Route::GET('/patients/{id}/appointments', [PatientController::class, 'appointments']);
+<<<<<<< HEAD
+});
+=======
 //});
+>>>>>>> 766ab9633e276859ae0abd2e198ff4720dffc635
 
 Route::post('/auth/register', [AuthController::class, 'registerPatient']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 
-//Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('auth/profile', [AuthController::class, 'profile']);
+    Route::put('auth/profile', [AuthController::class, 'updateProfile']);
+
+
     // Routes Réceptionniste
-    //Route::middleware(['role:receptionist'])->group(function () {
+    Route::middleware(['role:receptionist'])->group(function () {
         Route::post('auth/register/doctor', [AuthController::class, 'registerDoctor']);
        // Route::apiResource('patients', PatientController::class);
-    //});
-//});
+    });
+});

@@ -36,23 +36,23 @@ class AuthController extends Controller
 
         ]);
     }
-        
+
     });
         return response()->json([
             'message'=>'inscription reussi, cher patient'
-            
+
         ]);
     }catch (\Exception $e) {
         return response()->json([
             'error' => 'Erreur lors de la création',
-            'details' => $e->getMessage() 
+            'details' => $e->getMessage()
         ], 500);
     }
 }
 
     public function registerDoctor(Request $request){
         try {
-            
+
             $request->validate([
                 'email'=> "required|unique:users",
                 'name'=> " required |  string",
@@ -88,7 +88,7 @@ class AuthController extends Controller
         });
         return response()->json([
             'message'=>'inscription Doctor, reussi'
-            
+
         ]);
     }catch (\Exception $e) {
             return response()->json([
@@ -100,7 +100,7 @@ class AuthController extends Controller
         }
 
 
-   
+
 }
 
 public function login(Request $request) {
@@ -114,14 +114,20 @@ public function login(Request $request) {
     if (auth()->attempt($credential)) {
         $user = auth()->user();
 
-        
+
         if ($user->role === 'doctor') {
+
             $user->load('doctor.specialité'); 
+
+            $user->load('doctor.specialite');
+
+
+
         } elseif ($user->role === 'patient') {
             $user->load('patient');
         }
 
-        
+
         $token = $user->createToken('auth-token', [$user->role])->plainTextToken;
 
         return response()->json([
@@ -134,11 +140,53 @@ public function login(Request $request) {
 }catch (\Exception $e) {
     return response()->json([
         'error' => 'Erreur lors de la création',
-        'details' => $e->getMessage() 
+        'details' => $e->getMessage()
     ], 500);
 }
 
     return response()->json(['message' => 'Identifiants incorrects'], 401);
+}
+
+public function logout(Request $request){
+    $request->user()->currentAccessToken()->delete();
+
+    return response()->json([
+        'message' => 'Déconnexion réussie (Token supprimé)'
+    ], 200);
+}
+
+public function profile(Request $request){
+    $user=$request->user();
+    /*
+    if (!$user) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Non authentifié'
+        ], 401);
+    }
+    */
+    try{
+
+    if ($user->role === 'doctor'){
+        $user->load('doctor.speciality');
+    } elseif ($user->role === 'patient') {
+        $user->load('patient');
+    }
+}catch (\Exception $e) {
+    return response()->json([
+        'error' => 'Erreur lors du chargement du profile',
+        'details' => $e->getMessage()
+    ], 500);
+}
+
+    return response()->json([
+        'status' => true,
+        'data' => $user
+    ]);
+}
+
+public function updateProfile(Request $request){
+
 }
 
 }
