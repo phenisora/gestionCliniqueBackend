@@ -3,13 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Doctor;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
@@ -19,6 +20,8 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
+     
     protected $fillable = [
         'name',
         'email',
@@ -55,6 +58,19 @@ class User extends Authenticatable
 
     public function doctor(){
         return $this->hasOne(Doctor::class);
+    }
+
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'role' => $this->role // On ajoute le rôle directement dans le token JWT !
+        ];
     }
     
 }

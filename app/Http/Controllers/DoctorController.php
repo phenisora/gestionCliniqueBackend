@@ -27,10 +27,10 @@ class DoctorController extends Controller
 
      public function store(Request $request) {
         $doctors = Doctor::create($request->validate([
-            'user_id' => 'required',
-            'specialty_id' => 'required',
+            'user_id' => 'nullable',
+            'specialty_id' => 'nullable',
             'license_number' => 'required|unique:doctors',
-            'consultation_fee' => 'required|numeric'
+            'consultation_fee' => 'nullable|numeric'
         ]));
         return response()->json($doctors, 201);
     }
@@ -75,7 +75,7 @@ public function medecinsParSpecialite($id)
 {
     // 1. Récupérer tous les docteurs ayant cette spécialité
     // On charge 'user' pour avoir leurs noms
-    $doctors = Doctor::with('user')
+    $doctors = Doctor::with('userD')
         ->where('specialty_id', $id)
         ->get();
 
@@ -101,7 +101,7 @@ public function definirAvailabilities(Request $request, $id)
     //  On trouve le médecin
     $doctor = Doctor::findOrFail($id);
     //  On supprime les anciens créneaux pour éviter les doublons
-    $doctor->availabilities()->delete();
+   $doctor->availabilities()->delete();
     // On insère tout le tableau d'un coup
     $doctor->availabilities()->createMany($request->availabilities);
     return response()->json(['message' => 'Disponibilités enregistrées !'], 201);
