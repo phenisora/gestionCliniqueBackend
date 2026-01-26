@@ -60,7 +60,7 @@ class PatientController extends Controller
                 $patient = Patient::with(['user'])->findOrFail($id);
 
         // Vérifier l'autorisation
-        $user = auth()->user();
+        $user = auth('api')->user();
         if ($user->Patient() && $user->patient->id !== $patient->id) {
             return response()->json([
                 'success' => false,
@@ -81,7 +81,7 @@ class PatientController extends Controller
 {
     $patient = Patient::findOrFail($id);
 
-    $user = auth()->user();
+    $user = auth('api')->user();
 
     // 🔐 Autorisation
     if (
@@ -208,7 +208,7 @@ class PatientController extends Controller
         $patient = Patient::findOrFail($id);
 
         // Vérifier l'autorisation
-        $user = auth()->user();
+        $user = auth('api')->user();
         if ($user->Patient() && $user->patient->id !== $patient->id) {
             return response()->json([
                 'success' => false,

@@ -22,7 +22,7 @@ class AuthController extends Controller
             'name'=>$request->name,
             'email'=>$request->email,
             'password'=>bcrypt($request->password),
-            'role'=>$request->role,
+            'role' => 'patient',
             'phone'=>$request->phone
         ]);
         if($request->role ==='patient'){
@@ -57,7 +57,6 @@ class AuthController extends Controller
                 'email'=> "required|unique:users",
                 'name'=> " required |  string",
                 'password'=> " required | string",
-                'role'=> "required |string ",
                 'specialty_id'=>"required|exists:specialities,id",
                 'license_number'=>"required|unique:doctors,license_number",
                 'consultation_fee'=>"required",
@@ -70,7 +69,7 @@ class AuthController extends Controller
                     'email'=>$request->email,
                     'password'=>bcrypt($request->password),
                     'phone'=>$request->phone,
-                    'role'=>$request->role
+                    'role' => 'doctor'
                 ]);
 
                 Doctor::create([
@@ -105,66 +104,56 @@ class AuthController extends Controller
 
 public function login(Request $request) {
 
-    try{
-    $credential = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
+    try {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-    if (auth()->attempt($credential)) {
-        $user = auth()->user();
+        // auth()->attempt() vérifie les identifiants et génère le token JWT
+        if (!$token = auth('api')->attempt($credentials)) {
+            return response()->json(['message' => 'Identifiants incorrects'], 401);
+        }
+        
+        $user = auth('api')->user();
+        
 
-
+        // Chargement des relations selon le rôle
         if ($user->role === 'doctor') {
-
-            $user->load('doctor.specialité'); 
-
-            $user->load('doctor.specialite');
-
-
-
+            $user->load('doctor.speciality');
         } elseif ($user->role === 'patient') {
             $user->load('patient');
         }
 
-
-        $token = $user->createToken('auth-token', [$user->role])->plainTextToken;
-
         return response()->json([
             'message' => 'Connexion réussie',
-            'token' => $token,
-            'role' => $user->role, //  utile pour le frontend
-            'user' => $user,       // Contient maintenant les infos liées (doctor/patient)
+            'token' => $token, 
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60, // Durée de vie en secondes
+            'role' => $user->role,
+            'user' => $user,
         ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Erreur lors de la connexion',
+            'details' => $e->getMessage()
+        ], 500);
     }
-}catch (\Exception $e) {
-    return response()->json([
-        'error' => 'Erreur lors de la création',
-        'details' => $e->getMessage()
-    ], 500);
 }
 
-    return response()->json(['message' => 'Identifiants incorrects'], 401);
-}
-
-public function logout(Request $request){
-    $request->user()->currentAccessToken()->delete();
-
-    return response()->json([
-        'message' => 'Déconnexion réussie (Token supprimé)'
-    ], 200);
+public function logout() {
+    auth('api')->logout();
+    return response()->json(['message' => 'Déconnexion réussie (Token invalidé)']);
 }
 
 public function profile(Request $request){
-    $user=$request->user();
-    /*
-    if (!$user) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Non authentifié'
-        ], 401);
-    }
-    */
+
+    $user = auth('api')->user();
+if (!$user) {
+    return response()->json(['status' => false, 'message' => 'Non authentifié'], 401);
+}
+
     try{
 
     if ($user->role === 'doctor'){
@@ -187,47 +176,72 @@ public function profile(Request $request){
 
 public function updateProfile(Request $request)
 {
-    $user = $request->user();
+    $user = auth('api')->user();
 
-    // Validation des données
-    $request->validate([
+    if (!$user) {
+        return response()->json(['message' => 'Non authentifié'], 401);
+    }
+
+    // règles de validation de base
+    $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email,' . $user->id,
-        // Validation spécifique si c'est un docteur
-        'license_number' => 'required|unique:doctors'
-    ]);
+        'phone' => 'nullable|string',
+        'password' => 'nullable|min:6|confirmed', 
+    ];
+
+    // Ajout des règles spécifiques selon le rôle
+    if ($user->role === 'doctor' && $user->doctor) {
+        // On ignore l'ID du docteur actuel pour la licence unique
+        $rules['license_number'] = 'required|unique:doctors,license_number,' . $user->doctor->id;
+        $rules['specialty_id'] = 'sometimes|exists:specialities,id';
+        $rules['consultation_fee'] = 'sometimes|numeric';
+    }
+
+    $validatedData = $request->validate($rules);
 
     try {
         return DB::transaction(function () use ($request, $user) {
-            
-            // Mise à jour de la table 'users'
-            $user->update([
+            $userData = [
                 'name' => $request->name,
                 'email' => $request->email,
-            ]);
+                'phone' => $request->phone,
+            ];
 
-            // Mise à jour de la table liée selon le rôle
+            // Si un nouveau mot de passe est fourni, on le hache
+            if ($request->filled('password')) {
+                $userData['password'] = bcrypt($request->password);
+            }
+
+            $user->update($userData);
+
             if ($user->role === 'doctor' && $user->doctor) {
                 $user->doctor->update($request->only([
-                    'speciality_id', 
+                    'specialty_id', 
                     'license_number', 
-                    'consultation_fee'
+                    'consultation_fee',
+                    'bio'
                 ]));
             } 
             elseif ($user->role === 'patient' && $user->patient) {
                 $user->patient->update($request->only([
                     'address', 
-                    'phone'
+                    'date_of_birth',
+                    'blood_type',
+                    'emergency_contact'
                 ]));
             }
 
             return response()->json([
                 'message' => 'Profil mis à jour avec succès',
-                'data' => $user->load($user->role) // Recharge les données fraîches
+                'user' => $user->load($user->role === 'doctor' ? 'doctor.speciality' : 'patient')
             ]);
         });
     } catch (\Exception $e) {
-        return response()->json(['error' => 'Échec de la mise à jour'], 500);
+        return response()->json([
+            'error' => 'Échec de la mise à jour',
+            'details' => $e->getMessage()
+        ], 500);
     }
 }
 

@@ -34,7 +34,7 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 // Routes Protégées (Médecin/Réceptionniste)
 
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
 
 
 //Route::middleware('auth:sanctum')->group(function () {
@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-Route::group(['middleware'=>'auth:sanctum'], function(){
+Route::group(['middleware'=>'auth:api'], function(){
     Route::GET('/patients', [PatientController::class, 'index']);
     Route::GET('/patients/{id}', [PatientController::class, 'show']);
     Route::DELETE('/patients/{id}', [PatientController::class, 'destroy']);
@@ -64,7 +64,7 @@ Route::post('/auth/register', [AuthController::class, 'registerPatient']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:api'])->group(function () {
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/profile', [AuthController::class, 'profile']);
