@@ -101,7 +101,7 @@ public function definirAvailabilities(Request $request, $id)
     //  On trouve le médecin
     $doctor = Doctor::findOrFail($id);
     //  On supprime les anciens créneaux pour éviter les doublons
-    $doctor->availabilities()->delete();
+   $doctor->availabilities()->delete();
     // On insère tout le tableau d'un coup
     $doctor->availabilities()->createMany($request->availabilities);
     return response()->json(['message' => 'Disponibilités enregistrées !'], 201);

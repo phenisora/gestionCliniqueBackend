@@ -35,14 +35,14 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
 
 
-//Route::group(['middleware'=>'auth:sanctum'], function(){
+Route::group(['middleware'=>'auth:sanctum'], function(){
     Route::GET('/patients', [PatientController::class, 'index']);
     Route::GET('/patients/{id}', [PatientController::class, 'show']);
     Route::DELETE('/patients/{id}', [PatientController::class, 'destroy']);
     Route::PUT('/patients/{id}', [PatientController::class, 'update']);
     Route::GET('/patients/{id}/medical-history', [PatientController::class, 'medicalHistory']);
     Route::GET('/patients/{id}/appointments', [PatientController::class, 'appointments']);
-//});
+});
 
 Route::post('/auth/register', [AuthController::class, 'registerPatient']);
 Route::post('/auth/login', [AuthController::class, 'login']);
