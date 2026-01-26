@@ -83,7 +83,7 @@ class PatientController extends Controller
 
     $user = auth()->user();
 
-    // 🔐 Autorisation
+    //  Autorisation
     if (
         $user->patient &&                 // l'utilisateur est un patient
         $user->patient->id !== $patient->id && // pas son propre profil
@@ -180,9 +180,9 @@ class PatientController extends Controller
                         'reason' => $appointment->reason,
                         'notes' => $appointment->notes,
                         'prescription' => $appointment->prescription ? [
-                            'diagnosis' => $appointment->prescription->diagnosis,
-                            'medications' => $appointment->prescription->medications,
-                            'notes' => $appointment->prescription->notes,
+                        'diagnosis' => $appointment->prescription->diagnosis,
+                        'medications' => $appointment->prescription->medications,
+                        'notes' => $appointment->prescription->notes,
                         ] : null,
                     ];
                 }),

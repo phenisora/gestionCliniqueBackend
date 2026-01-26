@@ -27,4 +27,5 @@ class Availability extends Model
 {
     return $this->hasMany(Availability::class);
 }
+
 }
