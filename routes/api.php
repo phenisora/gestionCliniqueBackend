@@ -1,12 +1,20 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\AuthController;
 
+
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PrescriptionController;
+
+
+
+
+
+
 
 
 Route::get('/user', function (Request $request) {
@@ -25,13 +33,21 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
 // Routes Protégées (Médecin/Réceptionniste)
 
+
+Route::middleware('auth:sanctum')->group(function () {
+
+
 //Route::middleware('auth:sanctum')->group(function () {
+
+
+//Route::middleware('auth:sanctum')->group(function () {
+
     Route::post('/doctors', [DoctorController::class, 'store']);
-    Route::put('/doctors/{id}', [DoctorController::class, 'update']);
+    Route::put('/doctors/{doctors}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);
     Route::post('/doctors/{id}/availabilities', [DoctorController::class, 'definirAvailabilities']);
     Route::get('/doctors/{id}/availabilities', [DoctorController::class, 'dispoDunmedecin']);
-//});
+});
 
 
 
@@ -61,3 +77,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
        // Route::apiResource('patients', PatientController::class);
     });
 });
+
+
+
+//Route pour les ordonnances
+
+Route::post('/prescriptions',[PrescriptionController::class,'creerOrdonnance']);
+Route::put('/prescriptions/{id}',[PrescriptionController::class,'modifierOrdonnance']);
+Route::delete('/prescriptions/{id}',[PrescriptionController::class,'supprimerOrdonnance']);
