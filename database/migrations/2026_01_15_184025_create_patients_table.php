@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('emergency_contact')->nullable();
             $table->text('allergies')->nullable();
             $table->timestamps();
-           
+        
         });
     }
 

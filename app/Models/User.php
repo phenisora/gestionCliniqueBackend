@@ -3,24 +3,31 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\Doctor;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
+
+     
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'phone'
     ];
 
     /**
@@ -45,4 +52,25 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function patient(){
+        return $this->hasOne(Patient::class);
+    }
+
+    public function doctor(){
+        return $this->hasOne(Doctor::class);
+    }
+
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'role' => $this->role // On ajoute le rôle directement dans le token JWT !
+        ];
+    }
+    
 }
