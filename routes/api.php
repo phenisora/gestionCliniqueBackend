@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
@@ -25,7 +26,7 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
 // Routes Protégées (Médecin/Réceptionniste)
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::post('/doctors', [DoctorController::class, 'store']);
     Route::put('/doctors/{doctors}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);

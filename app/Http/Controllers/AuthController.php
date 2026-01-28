@@ -25,7 +25,7 @@ class AuthController extends Controller
             'role' => 'patient',
             'phone'=>$request->phone
         ]);
-        if($request->role ==='patient'){
+        
         Patient::create([
             'user_id'=>$user->id,
             'date_of_birth'=>$request->date_of_birth,
@@ -35,7 +35,7 @@ class AuthController extends Controller
             'emergency_contact'=>$request->emergency_contact
 
         ]);
-    }
+    
 
     });
         return response()->json([
