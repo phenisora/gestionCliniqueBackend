@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
-use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\SpecialityController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\PrescriptionController;
 
 
 
@@ -56,8 +57,25 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('auth/profile', [AuthController::class, 'profile']);
     Route::put('auth/updateProfile', [AuthController::class, 'updateProfile']);
 
+
+    Route::get('/appointments/available-slots', [AppointmentController::class, 'availableSlots']);
+    Route::get('/appointments/date/{date}', [AppointmentController::class, 'byDate']);
+    Route::get('/appointments/doctors/{id}/appointment', [AppointmentController::class, 'doctorAppointments']);
+    Route::get('/specialities', [SpecialityController::class, 'index']);
+    Route::get('/specialities/{id}', [SpecialityController::class, 'show']);
+
+
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::post('/appointments', [AppointmentController::class, 'store']);
+    Route::get('/appointments/{id}', [AppointmentController::class, 'show']);
+    Route::put('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
+    Route::put('/appointments/{id}', [AppointmentController::class, 'update']);
+    Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
+
+
+
+
+
     // Routes Réceptionniste
     Route::middleware(['role:receptionist'])->group(function () {
     Route::post('auth/register/doctor', [AuthController::class, 'registerDoctor']);

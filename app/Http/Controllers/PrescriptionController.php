@@ -37,7 +37,7 @@ class PrescriptionController extends Controller
 
     }
 
-    public function supprimerOrdonnance(){
+    public function supprimerOrdonnance($id){
         $prescription = Prescription::findOrFail($id);
         $prescription->delete();
 
