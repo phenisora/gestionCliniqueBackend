@@ -2,18 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
-
-
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\AppointmentController;
-
-
-
-
 
 
 
@@ -34,15 +27,7 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
 // Routes Protégées (Médecin/Réceptionniste)
 
-
 Route::middleware('auth:api')->group(function () {
-
-
-//Route::middleware('auth:sanctum')->group(function () {
-
-
-//Route::middleware('auth:sanctum')->group(function () {
-
     Route::post('/doctors', [DoctorController::class, 'store']);
     Route::put('/doctors/{doctors}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);
@@ -72,7 +57,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('auth/updateProfile', [AuthController::class, 'updateProfile']);
 
     Route::get('/appointments', [AppointmentController::class, 'index']);
-
+    Route::post('/appointments', [AppointmentController::class, 'store']);
     // Routes Réceptionniste
     Route::middleware(['role:receptionist'])->group(function () {
     Route::post('auth/register/doctor', [AuthController::class, 'registerDoctor']);
