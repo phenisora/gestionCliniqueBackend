@@ -152,7 +152,7 @@ class PatientController extends Controller
         ])->findOrFail($id);
 
         // Vérifier l'autorisation
-        $user = auth()->user();
+        $user = auth('api')->user();
         if ($user->Patient() && $user->patient->id !== $patient->id) {
             return response()->json([
                 'success' => false,

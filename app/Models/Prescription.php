@@ -14,4 +14,9 @@ class Prescription extends Model
     'notes	'
 
     ];
+
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
+    }
 }
