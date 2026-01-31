@@ -15,9 +15,7 @@ class PrescriptionController extends Controller
             'medications'    => 'required',
             'notes'          => 'nullable'
         ]);
-
         $prescription = Prescription::create($data);
-
         return response()->json([
             'message' => 'Ordonnance créée avec succès',
             'data' => $prescription

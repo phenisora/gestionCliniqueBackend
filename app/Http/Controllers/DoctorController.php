@@ -17,13 +17,19 @@ class DoctorController extends Controller
        ],201) ;
     }
 
-     // Fonction qui affiche les détails d'un médecin
-     public function detail(Doctor $doctor){
-       return response()->json([
+   // Fonction qui affiche les détails d'un médecin
+public function detail($id) 
+{
+    
+
+    $doctors = Doctor::with(['user', 'specialty'])->findOrFail($id);
+
+    // Retourne la réponse JSON avec les données chargées
+    return response()->json([
         'status' => 'success',
-        //'data' => $doctors
+        'data'   => $doctor
     ]);
-     }
+}
 
      public function store(Request $request) {
         $doctors = Doctor::create($request->validate([
