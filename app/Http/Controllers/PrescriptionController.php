@@ -15,9 +15,7 @@ class PrescriptionController extends Controller
             'medications'    => 'required',
             'notes'          => 'nullable'
         ]);
-
         $prescription = Prescription::create($data);
-
         return response()->json([
             'message' => 'Ordonnance créée avec succès',
             'data' => $prescription
@@ -37,7 +35,7 @@ class PrescriptionController extends Controller
 
     }
 
-    public function supprimerOrdonnance(){
+    public function supprimerOrdonnance($id){
         $prescription = Prescription::findOrFail($id);
         $prescription->delete();
 

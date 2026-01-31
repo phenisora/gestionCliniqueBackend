@@ -10,11 +10,12 @@ class Appointment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'patient_id',
         'doctor_id',
+        'patient_id',
+        "time",
+        "reason",
         'date',
-        'time',
-        'reason',
+
         'status',
         'notes',
     ];
@@ -28,10 +29,13 @@ class Appointment extends Model
         return $this->belongsTo(Patient::class);
     }
 
+
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
     }
+
+
 
     public function prescription()
     {
@@ -42,4 +46,7 @@ class Appointment extends Model
     {
         return $this->hasOne(MedicalRecord::class);
     }
+
+
 }
+

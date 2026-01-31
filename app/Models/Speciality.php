@@ -12,7 +12,7 @@ class Speciality extends Model
         'description',
     ];
 
-    public function doctor(){
-        return $this->hasMany(Doctor::class);
+    public function doctors(){
+        return $this->hasMany(Doctor::class,'specialty_id');
     }
 }

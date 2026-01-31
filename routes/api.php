@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\SpecialityController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PrescriptionController;
-
 
 
 
@@ -32,8 +33,8 @@ Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 
 
 
-Route::middleware('auth:api')->group(function () {
 
+Route::middleware('auth:api')->group(function () {
     Route::post('/doctors', [DoctorController::class, 'store']);
     Route::put('/doctors/{doctors}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{id}', [DoctorController::class, 'supprimer']);
@@ -51,6 +52,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::PUT('/patients/{id}', [PatientController::class, 'update']);
     Route::GET('/patients/{id}/medical-history', [PatientController::class, 'medicalHistory']);
     Route::GET('/patients/{id}/appointments', [PatientController::class, 'appointments']);
+<<<<<<< HEAD
 
 
 });
@@ -62,9 +64,37 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware(['auth:api'])->group(function () {
 
 
+=======
+});
+
+Route::post('/auth/register', [AuthController::class, 'registerPatient']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+
+Route::middleware(['auth:api'])->group(function () {
+
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/profile', [AuthController::class, 'profile']);
     Route::put('auth/updateProfile', [AuthController::class, 'updateProfile']);
+
+
+    Route::get('/appointments/available-slots', [AppointmentController::class, 'availableSlots']);
+    Route::get('/appointments/date/{date}', [AppointmentController::class, 'byDate']);
+    Route::get('/appointments/doctors/{id}/appointment', [AppointmentController::class, 'doctorAppointments']);
+    Route::get('/specialities', [SpecialityController::class, 'index']);
+    Route::get('/specialities/{id}', [SpecialityController::class, 'show']);
+
+
+    Route::get('/appointments', [AppointmentController::class, 'index']);
+    Route::post('/appointments', [AppointmentController::class, 'store']);
+    Route::get('/appointments/{id}', [AppointmentController::class, 'show']);
+    Route::put('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
+    Route::put('/appointments/{id}', [AppointmentController::class, 'update']);
+    Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
+
+
+
+
 
     // Routes Réceptionniste
     Route::middleware(['role:receptionist'])->group(function () {
@@ -72,6 +102,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('patients', PatientController::class);
     });
 });
+
 
 
 //Route pour les ordonnances
@@ -82,3 +113,4 @@ Route::delete('/prescriptions/{id}',[PrescriptionController::class,'supprimerOrd
 Route::get('/prescriptions',[PrescriptionController::class,'mesOrdonnance']);
 Route::get('/prescriptions/{id}',[PrescriptionController::class,'detailsOrdonnance']);
 Route::get('/appointments/{id}/prescriptions',[PrescriptionController::class,'ordonnancesRDV']);
+
