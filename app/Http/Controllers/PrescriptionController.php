@@ -63,7 +63,7 @@ class PrescriptionController extends Controller
         $user = auth('api')->user();
         $prescriptions = Prescription::whereHas('appointment.patient', function ($query) use ($user) {
             $query->where('user_id', $user->id);
-        })->with('appointment.doctor.user')->get();
+        })->with('appointment.doctor.userD')->get();
 
         return response()->json([
             'data' => $prescriptions
@@ -75,7 +75,7 @@ class PrescriptionController extends Controller
             ->whereHas('appointment.patient', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with('appointment.doctor.user')
+            ->with('appointment.doctor.userD')
             ->firstOrFail();
 
         return response()->json([

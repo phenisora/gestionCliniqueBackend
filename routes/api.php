@@ -110,7 +110,7 @@ Route::middleware(['auth:api'])->group(function () {
 Route::post('/prescriptions',[PrescriptionController::class,'creerOrdonnance']);
 Route::put('/prescriptions/{id}',[PrescriptionController::class,'modifierOrdonnance']);
 Route::delete('/prescriptions/{id}',[PrescriptionController::class,'supprimerOrdonnance']);
-Route::get('/prescriptions',[PrescriptionController::class,'mesOrdonnance']);
+Route::get('/mesprescriptions',[PrescriptionController::class,'mesOrdonnance']);
 Route::get('/prescriptions/{id}',[PrescriptionController::class,'detailsOrdonnance']);
 Route::get('/appointments/{id}/prescriptions',[PrescriptionController::class,'ordonnancesRDV']);
 
