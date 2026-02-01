@@ -6,6 +6,8 @@ use App\Models\Appointment;
 use App\Models\Availability;
 use Illuminate\Http\Request;
 use App\Http\Requests\AppointmentRequest;
+use App\Notifications\AppointmentReminder;
+
 class AppointmentController extends Controller
 {
     
@@ -51,6 +53,14 @@ public function store(AppointmentRequest $request)
     }
 
     $appointment = Appointment::create($data);
+    
+    try {
+        $user->notify(new AppointmentReminder($appointment));
+    } catch (\Exception $e) {
+        // Optionnel : on log l'erreur si l'email ne part pas, 
+        // mais on n'empêche pas la création du RDV
+        \Log::error("Erreur d'envoi email : " . $e->getMessage());
+    }
 
     return response()->json([
         'message' => 'Rendez-vous créé avec succès',
