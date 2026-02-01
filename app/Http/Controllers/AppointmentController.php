@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Availability;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\AppointmentRequest;
 class AppointmentController extends Controller
 {
     
@@ -32,33 +32,30 @@ public function index(Request $request)
     return $query->orderBy('date')->orderBy('time')->paginate(15);
 }
 
-public function store(Request $request) {
+public function store(AppointmentRequest $request) 
+{
     $user = auth('api')->user();
-    
-    $validated = $request->validate([
-        'doctor_id' => 'required|exists:doctors,id',
-        'date' => 'required|date|after_or_equal:today',
-        'time' => 'required',
-        'reason' => 'required|string',
-        'patient_id' => $user->role === 'receptionist' ? 'required|exists:patients,id' : 'nullable'
-    ]);
+    $data = $request->validated();
 
-    // Déterminer le patient_id
-    $patientId = ($user->role === 'patient') ? $user->patient->id : $request->patient_id;
-
-    //  Logique Métier : Vérifier si le docteur est déjà pris à cette heure
-    $exists = Appointment::where('doctor_id', $request->doctor_id)
-        ->where('date', $request->date)
-        ->where('time', $request->time)
-        ->where('status', '!=', 'cancelled')
-        ->exists();
-
-    if ($exists) {
-        return response()->json(['message' => 'Ce créneau est déjà réservé.'], 422);
+    // SI l'utilisateur est un PATIENT
+    if ($user->role === 'patient') {
+        // On force le patient_id avec celui de l'utilisateur connecté
+        $data['patient_id'] = $user->patient->id;
+    } 
+    // SI c'est un RECEPTIONNISTE
+    elseif ($user->role === 'receptionist') {
+        // sur postman ne pas oublier de renseigner l'id du patient si c'est un receptionniste qui cree
+        if (!isset($data['patient_id'])) {
+            return response()->json(['message' => 'Le patient_id est requis pour les réceptionnistes'], 422);
+        }
     }
 
-    $appointment = Appointment::create(array_merge($validated, ['patient_id' => $patientId]));
-    return response()->json($appointment, 201);
+    $appointment = Appointment::create($data);
+
+    return response()->json([
+        'message' => 'Rendez-vous créé avec succès',
+        'data' => $appointment
+    ], 201);
 }
 
 public function show($id) {

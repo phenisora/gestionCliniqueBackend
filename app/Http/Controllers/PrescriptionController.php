@@ -2,25 +2,39 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
+use App\Http\Requests\PrescriptionRequest;
 
 class PrescriptionController extends Controller
 {
-    public function creerOrdonnance(Request $request){
-        $data = $request->validate([
+    public function creerOrdonnance(PrescriptionRequest $request) 
+{
+    // On récupère les données validées
+    $data = $request->validated();
 
-          'appointment_id' => 'required',
-            'diagnosis'      => 'required',
-            'medications'    => 'required',
-            'notes'          => 'nullable'
-        ]);
-        $prescription = Prescription::create($data);
+    //Sécurité : Vérifier que le rendez-vous appartient bien au docteur connecté
+    $appointment = Appointment::findOrFail($data['appointment_id']);
+    $user = auth('api')->user();
+
+    if ($appointment->doctor_id !== $user->doctor->id) {
         return response()->json([
-            'message' => 'Ordonnance créée avec succès',
-            'data' => $prescription
-        ], 201);
+            'message' => 'Action non autorisée. Ce rendez-vous ne vous est pas assigné.'
+        ], 403);
     }
+
+    //  Ajout de l'ID du docteur à l'ordonnance (si ta table prescriptions a une colonne doctor_id)
+    $data['doctor_id'] = $user->doctor->id;
+
+    // Création
+    $prescription = Prescription::create($data);
+
+    return response()->json([
+        'message' => 'Ordonnance créée avec succès',
+        'data' => $prescription
+    ], 201);
+}
 
     public function modifierOrdonnance(Request $request, $id){
         $prescription = Prescription::findOrFail($id);

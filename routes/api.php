@@ -52,7 +52,7 @@ Route::group(['middleware'=>'auth:api'], function(){
     Route::PUT('/patients/{id}', [PatientController::class, 'update']);
     Route::GET('/patients/{id}/medical-history', [PatientController::class, 'medicalHistory']);
     Route::GET('/patients/{id}/appointments', [PatientController::class, 'appointments']);
-<<<<<<< HEAD
+
 
 
 });
@@ -64,7 +64,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware(['auth:api'])->group(function () {
 
 
-=======
+
 });
 
 Route::post('/auth/register', [AuthController::class, 'registerPatient']);
