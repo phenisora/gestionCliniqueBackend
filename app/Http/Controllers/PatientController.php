@@ -143,11 +143,11 @@ class PatientController extends Controller
         $patient = Patient::with([
             'appointments' => function ($query) {
                 $query->where('status', 'completed')
-                    ->with(['doctor.user', 'doctor.specialty', 'prescription'])
+                    ->with(['doctor.userD', 'doctor.speciality', 'prescription'])
                     ->orderByDesc('date');
             },
             'medicalRecords' => function ($query) {
-                $query->with('doctor.user')->orderByDesc('created_at');
+                $query->with('doctor.userD')->orderByDesc('created_at');
             }
         ])->findOrFail($id);
 
@@ -217,7 +217,7 @@ class PatientController extends Controller
         }
 
         $appointments = $patient->appointments()
-            ->with(['doctor.user', 'doctor.specialty'])
+            ->with(['doctor.userD', 'doctor.speciality'])
             ->orderByDesc('date')
             ->orderByDesc('time')
             ->paginate(15);

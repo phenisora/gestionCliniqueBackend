@@ -22,12 +22,12 @@ public function detail($id)
 {
     
 
-    $doctors = Doctor::with(['user', 'specialty'])->findOrFail($id);
+    $doctors = Doctor::with(['userD', 'speciality'])->findOrFail($id);
 
     // Retourne la réponse JSON avec les données chargées
     return response()->json([
         'status' => 'success',
-        'data'   => $doctor
+        'data'   => $doctors
     ]);
 }
 
@@ -117,7 +117,7 @@ public function searchParNom(Request $request)
     {
         $nom = $request->name;
         // On cherche dans la table 'users' liée
-        return Doctor::whereHas('user', function($q) use ($nom) {
+        return Doctor::whereHas('userD', function($q) use ($nom) {
             $q->where('name', 'like', "%$nom%");
         })->get();
 

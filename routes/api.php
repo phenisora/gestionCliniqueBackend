@@ -20,10 +20,10 @@ Route::get('/user', function (Request $request) {
 
 // Routes public pour les médecins
 Route::get('/doctors',[DoctorController::class,'index']);
+Route::get('/doctors/search', [DoctorController::class, 'searchParNom']);
 Route::get('/doctors/{doctors}',[DoctorController::class,'detail']);
 Route::get('/doctors/specialty/{id}', [DoctorController::class, 'medecinsParSpecialite']);
-// Route pour la recherche  un docteur par son nom
-Route::get('/doctors/search', [DoctorController::class, 'searchParNom']);
+
 // Route pour la recherche par date
 Route::get('/doctors/available', [DoctorController::class, 'availableParDate']);
 

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\User;
+use App\Models\Appointment;
+use App\Models\Availability;
 use App\Models\Speciality;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Doctor extends Model
@@ -24,7 +26,7 @@ class Doctor extends Model
     ];
 
     public function userD(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
 
